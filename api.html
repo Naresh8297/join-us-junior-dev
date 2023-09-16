@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #bed8b3;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 10px auto;
+    display: block;
+}
+h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color:red;
+}
+p {
+    margin: 5px 0;
+}
+label {
+    font-weight: bold;
+}
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #b88715;
+    border-radius: 4px;
+}
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3;
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Github User Card</h1>
+        <form id="githubForm">
+            <label for="username">Enter GitHub Username:</label>
+            <input type="text" id="username" required>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="userCard" style="display: none;">
+            <img id="avatar" class="avatar" src="" alt="User Avatar">
+            <h2 id="name"></h2>
+            <p><strong>Username:</strong> <span id="usernameText"></span></p>
+            <p><strong>No. of public repos:</strong> <span id="publicRepos"></span></p>
+            <p><strong>No. of public gists:</strong> <span id="publicGists"></span></p>
+            <p><strong>Profile created at:</strong> <span id="createdAt"></span></p>
+        </div>
+        <p id="errorText" style="color: red; display: none;">User not found.</p>
+    </div>
+
+    <script>
+        const githubForm = document.getElementById("githubForm");
+        const userCard = document.getElementById("userCard");
+        const avatar = document.getElementById("avatar");
+        const name = document.getElementById("name");
+        const usernameText = document.getElementById("usernameText");
+        const publicRepos = document.getElementById("publicRepos");
+        const publicGists = document.getElementById("publicGists");
+        const createdAt = document.getElementById("createdAt");
+        const errorText = document.getElementById("errorText");
+
+        githubForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const inputUsername = document.getElementById("username").value;
+            const apiUrl = `https://api.github.com/users/${inputUsername}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (response.ok) {
+                    const userData = await response.json();
+                    avatar.src = userData.avatar_url;
+                    name.textContent = userData.name || '';
+                    usernameText.textContent = userData.login;
+                    publicRepos.textContent = userData.public_repos;
+                    publicGists.textContent = userData.public_gists;
+                    const createdDate = new Date(userData.created_at);
+                    createdAt.textContent = createdDate.toISOString().split('T')[0];
+                    userCard.style.display = "block";
+                    errorText.style.display = "none"; 
+                } else {
+                    userCard.style.display = "none"; 
+                    errorText.style.display = "block"; 
+                }
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                userCard.style.display = "none"; 
+                errorText.style.display = "block"; 
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+   
